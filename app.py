@@ -5,7 +5,7 @@ import google.generativeai as genai
 app = Flask(__name__)
 
 
-genai.configure(api_key="AIzaSyCznuVDu_5y8g6KuX9450vTVhBRe28yDC4")
+genai.configure(api_key="APIKEY")
 model = genai.GenerativeModel("gemini-2.5-flash")
 
 @app.route("/", methods=["GET", "POST"])
@@ -44,4 +44,5 @@ def index():
     return render_template("index.html", output=output, history=history)
 
 if __name__ == "__main__":
+
     app.run(debug=True)
