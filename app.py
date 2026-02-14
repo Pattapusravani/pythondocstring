@@ -1,6 +1,11 @@
 import ast
 from flask import Flask, render_template, request
 import google.generativeai as genai
+from flask import send_file
+import io
+from datetime import datetime
+
+
 
 app = Flask(__name__)
 
@@ -9,6 +14,7 @@ genai.configure(api_key="APIKEY")
 model = genai.GenerativeModel("gemini-2.5-flash")
 
 @app.route("/", methods=["GET", "POST"])
+
 def index():
     output = ""
     history = []
@@ -42,7 +48,17 @@ def index():
         history.append({"style": style, "result": output})
 
     return render_template("index.html", output=output, history=history)
+@app.route("/download")
+def download():
+    content = request.args.get("content", "")
+    file_stream = io.BytesIO()
+    file_stream.write(content.encode("utf-8"))
+    file_stream.seek(0)
+    return send_file(file_stream, as_attachment=True, download_name="docstrings.txt", mimetype="text/plain")
+def generate_project_doc(output, style):
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    header = f"Docstring Generator Output\nStyle: {style}\nGenerated on: {timestamp}\n\n"
+    return header + output
 
 if __name__ == "__main__":
-
     app.run(debug=True)
